@@ -1,10 +1,56 @@
+# Compilación
 target/
 *.class
 *.log
+HELP.md
+
+# IDE y sistema operativo
 .idea/
 *.iml
 .vscode/
 .DS_Store
+Thumbs.db
+desktop.ini
+
+# Variables de entorno: solo se sube el ejemplo
 .env
 .env.*
 !.env.example
+
+# Configuración local de Spring (application.yml sí se sube: no tiene secretos)
+application-local.yml
+application-local.yaml
+application-local.properties
+src/main/resources/application-*.yml
+src/main/resources/application-*.yaml
+src/main/resources/application-*.properties
+
+# Certificados y llaves (por ejemplo, el certificado de cliente de APIM)
+*.pem
+*.key
+*.crt
+*.cer
+*.pfx
+*.p12
+*.jks
+*.keystore
+*.truststore
+
+# Azure y despliegue
+.azure/
+*.PublishSettings
+*.publishsettings
+*.azureauth
+azureauth.json
+local.settings.json
+
+# Docker local
+docker-compose.override.yml
+docker-compose.override.yaml
+
+# Datos locales de MongoDB
+data/
+mongo-data/
+
+# Configuración local de Claude Code
+.claude/settings.local.json

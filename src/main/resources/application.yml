@@ -13,7 +13,7 @@ spring:
 
 app:
   # Correos separados por coma que quedan como administradores al crear su perfil.
-  admin-emails: ${ADMIN_EMAILS:gabox9823@gmail.com}
+  admin-emails: ${ADMIN_EMAILS:gcabrerarojas.25@gmail.com}
   # Carga los textos legales y de ayuda de src/main/resources/seed si la colección está vacía.
   seed-enabled: ${SEED_ENABLED:true}
 
