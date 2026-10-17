@@ -1,0 +1,24 @@
+# Ningún valor secreto va aquí. En Azure se definen como variables de entorno
+# del App Service, con referencias al Key Vault.
+server:
+  port: ${PORT:8080}
+
+spring:
+  application:
+    name: cvexpert-ms-usuarios
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/cvexpert-usuarios}
+      auto-index-creation: true
+
+app:
+  # Correos separados por coma que quedan como administradores al crear su perfil.
+  admin-emails: ${ADMIN_EMAILS:gabox9823@gmail.com}
+  # Carga los textos legales y de ayuda de src/main/resources/seed si la colección está vacía.
+  seed-enabled: ${SEED_ENABLED:true}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health

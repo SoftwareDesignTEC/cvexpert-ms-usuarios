@@ -1,0 +1,38 @@
+[
+  {
+    "id": "privacy-es-1.0",
+    "kind": "privacy",
+    "lang": "es",
+    "title": "Política de privacidad",
+    "version": "1.0",
+    "effectiveDate": 1793491200000,
+    "content": "BORRADOR: reemplazar con el texto definitivo antes de la entrega.\n\n## Datos que recopilamos\nCVExpert guarda los datos de tu perfil profesional, tus currículums y tus postulaciones para ofrecerte el servicio.\n\n## Uso de los datos\nLos datos se usan solo dentro de la aplicación. No se venden ni se comparten con terceros.\n\n## Tus derechos\nPodés descargar tus datos desde Configuración en cualquier momento."
+  },
+  {
+    "id": "privacy-en-1.0",
+    "kind": "privacy",
+    "lang": "en",
+    "title": "Privacy policy",
+    "version": "1.0",
+    "effectiveDate": 1793491200000,
+    "content": "DRAFT: replace with the final text before delivery.\n\n## Data we collect\nCVExpert stores your professional profile, resumes and job applications to provide the service.\n\n## How we use it\nYour data is used only inside the app. It is never sold or shared with third parties.\n\n## Your rights\nYou can download your data from Settings at any time."
+  },
+  {
+    "id": "terms-es-1.0",
+    "kind": "terms",
+    "lang": "es",
+    "title": "Términos y condiciones",
+    "version": "1.0",
+    "effectiveDate": 1793491200000,
+    "content": "BORRADOR: reemplazar con el texto definitivo antes de la entrega.\n\n## Uso del servicio\nCVExpert es un proyecto académico del curso Diseño de Software del Instituto Tecnológico de Costa Rica.\n\n## Responsabilidad\nLa información de ofertas y recomendaciones es orientativa."
+  },
+  {
+    "id": "terms-en-1.0",
+    "kind": "terms",
+    "lang": "en",
+    "title": "Terms of service",
+    "version": "1.0",
+    "effectiveDate": 1793491200000,
+    "content": "DRAFT: replace with the final text before delivery.\n\n## Use of the service\nCVExpert is an academic project for the Software Design course at Instituto Tecnológico de Costa Rica.\n\n## Liability\nJob offers and recommendations are for guidance only."
+  }
+]
