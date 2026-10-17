@@ -33,13 +33,13 @@ class ProfileControllerTest {
 
     @Test
     void devuelveElPerfilConRolEnMinusculaYFechasEnEpoch() throws Exception {
-        UserProfileResponse p = new UserProfileResponse("sub-1", "Gabo", "gabox9823@gmail.com", null, null,
+        UserProfileResponse p = new UserProfileResponse("sub-1", "Gabo", "gcabrerarojas.25@gmail.com", null, null,
                 null, null, List.of(), List.of("remote"), List.of(), Role.ADMIN, 1_793_491_200_000L, 1_793_491_200_000L);
         when(service.getOrCreate(eq("sub-1"), any(), any())).thenReturn(p);
 
         mvc.perform(get("/profiles/sub-1")
                         .header("X-User-Id", "sub-1")
-                        .header("X-User-Email", "gabox9823@gmail.com"))
+                        .header("X-User-Email", "gcabrerarojas.25@gmail.com"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.role").value("admin"))
                 .andExpect(jsonPath("$.createdAt").value(1_793_491_200_000L))

@@ -29,7 +29,7 @@ class ProfileServiceTest {
 
     private static final long NOW = 1_793_491_200_000L;
     private static final CurrentUser ANA = new CurrentUser("sub-ana", "ana@example.com");
-    private static final CurrentUser GABO = new CurrentUser("sub-gabo", "Gabox9823@gmail.com");
+    private static final CurrentUser GABO = new CurrentUser("sub-gabo", "GCabreraRojas.25@gmail.com");
     private static final ClientInfo WEB = ClientInfo.of("web", "Mozilla/5.0 (Windows NT 10.0) Chrome/130.0");
 
     private ProfileRepository repository;
@@ -42,7 +42,7 @@ class ProfileServiceTest {
         sessions = mock(SessionService.class);
         when(repository.save(any(Profile.class))).thenAnswer(inv -> inv.getArgument(0));
         Clock clock = Clock.fixed(Instant.ofEpochMilli(NOW), ZoneOffset.UTC);
-        AppProperties props = new AppProperties("gabox9823@gmail.com, otro@example.com", false);
+        AppProperties props = new AppProperties("gcabrerarojas.25@gmail.com, otro@example.com", false);
         service = new ProfileService(repository, sessions, props, clock);
     }
 
@@ -71,7 +71,7 @@ class ProfileServiceTest {
 
     @Test
     void perfilExistenteSeAsciendeSiSuCorreoSeAgregoDespues() {
-        Profile viejo = profile("sub-gabo", "gabox9823@gmail.com");
+        Profile viejo = profile("sub-gabo", "gcabrerarojas.25@gmail.com");
         when(repository.findById("sub-gabo")).thenReturn(Optional.of(viejo));
 
         UserProfileResponse p = service.getOrCreate("sub-gabo", GABO, WEB);

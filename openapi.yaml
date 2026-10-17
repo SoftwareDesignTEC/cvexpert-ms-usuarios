@@ -11,7 +11,7 @@ info:
 
     - **Rol.** El perfil incluye `role` (`user` o `admin`). Es de solo lectura. Los
       correos listados en la variable `ADMIN_EMAILS` quedan como `admin` al crear
-      su perfil. El primero es gabox9823@gmail.com.
+      su perfil. El primero es gcabrerarojas.25@gmail.com.
     - **Fechas en epoch.** Todas las fechas viajan como milisegundos UTC (entero
       `int64`). En la Fase I eran texto: los clientes deben ajustar `lastActiveAt`,
       `effectiveDate` y `generatedAt`.

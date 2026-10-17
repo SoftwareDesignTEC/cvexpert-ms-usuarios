@@ -29,7 +29,7 @@ Reglas que aplica este servicio:
 - **`{id}`** puede ser el `sub` (lo usa la web) o el correo (lo usa Android desde la
   Fase I). Si no coincide con el usuario autenticado, responde 403.
 - **Rol.** Los correos de `ADMIN_EMAILS` quedan como `admin`. El primero es
-  gabox9823@gmail.com.
+  gcabrerarojas.25@gmail.com.
 - **Fechas** en epoch, milisegundos UTC.
 - **Certificado.** En Azure solo se aceptan llamadas con el certificado de cliente de
   APIM. Eso se configura en el App Service y se documenta en `cvexpert-apim`.
@@ -74,7 +74,7 @@ al Key Vault para los secretos. Hay un ejemplo en [`.env.example`](.env.example)
 | Variable | Para qué | Valor por defecto (solo local) |
 |---|---|---|
 | `MONGODB_URI` | Cadena de conexión de Cosmos DB / MongoDB. **Secreta**: va al Key Vault | `mongodb://localhost:27017/cvexpert-usuarios` |
-| `ADMIN_EMAILS` | Correos administradores, separados por coma | `gabox9823@gmail.com` |
+| `ADMIN_EMAILS` | Correos administradores, separados por coma | `gcabrerarojas.25@gmail.com` |
 | `SEED_ENABLED` | Carga los textos de `src/main/resources/seed` si la colección está vacía | `true` |
 | `PORT` | Puerto HTTP | `8080` |
 
