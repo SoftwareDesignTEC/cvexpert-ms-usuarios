@@ -136,7 +136,7 @@ src/main/java/cr/ac/tec/cvexpert/usuarios/
 ├── dto/          Lo que entra y sale por la API
 ├── exception/    Errores y su traducción a ApiError
 └── config/       Propiedades, reloj, carga inicial de datos y filtro del certificado de APIM
-src/main/resources/seed/   Textos legales y contactos de ayuda iniciales (BORRADOR)
+src/main/resources/seed/   Textos legales y contactos de ayuda iniciales
 postman/                   Colección y entornos de Postman
 ```
 
@@ -150,4 +150,5 @@ otro integrante del equipo.
 - [x] Pipeline de GitHub Actions: pruebas en cada PR y despliegue desde `main`
 - [x] Exigir el certificado de APIM en el App Service
 - [x] Swagger UI y pruebas de Postman
-- [ ] Reemplazar los textos legales y los correos de ayuda de `seed/` por los definitivos
+- [x] Textos legales definitivos (versión 1.1, cargada también en producción)
+- [ ] Reemplazar los correos de ayuda de `seed/help.json` (`@cvexpert.example`) por los definitivos
