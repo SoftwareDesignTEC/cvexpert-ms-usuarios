@@ -150,5 +150,5 @@ otro integrante del equipo.
 - [x] Pipeline de GitHub Actions: pruebas en cada PR y despliegue desde `main`
 - [x] Exigir el certificado de APIM en el App Service
 - [x] Swagger UI y pruebas de Postman
-- [x] Textos legales definitivos (versión 1.1, cargada también en producción)
-- [ ] Reemplazar los correos de ayuda de `seed/help.json` (`@cvexpert.example`) por los definitivos
+- [x] Textos legales definitivos (términos 1.1 y privacidad 1.2, cargados también en producción)
+- [x] Correo real de ayuda y privacidad (`seed/help.json`, también en producción)
