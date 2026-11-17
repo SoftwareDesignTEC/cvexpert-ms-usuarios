@@ -32,7 +32,9 @@ Reglas que aplica este servicio:
   gcabrerarojas.25@gmail.com.
 - **Fechas** en epoch, milisegundos UTC.
 - **Certificado.** En Azure solo se aceptan llamadas con el certificado de cliente de
-  APIM. Eso se configura en el App Service y se documenta en `cvexpert-apim`.
+  APIM. El App Service lo pide en el TLS (modo `Required`, salvo `/actuator/health`) y
+  `ApimCertificateFilter` compara su huella con `APIM_CERT_THUMBPRINTS`. Sin esa
+  variable no se exige nada, así que en local no hace falta.
 
 ## Cómo correrlo en local
 
@@ -50,6 +52,10 @@ mvn test                 # pruebas unitarias (no necesitan MongoDB)
 mvn spring-boot:run      # levanta el servicio en http://localhost:8080
 ```
 
+Si la ruta de la carpeta tiene tildes o eñes, `spring-boot:run` no encuentra la clase
+principal en Windows. En ese caso: `mvn clean package -DskipTests` y
+`java -jar target/app.jar`.
+
 Para probarlo sin APIM hay que mandar los encabezados que APIM agregaría:
 
 ```bash
@@ -66,6 +72,33 @@ curl http://localhost:8080/help
 curl http://localhost:8080/actuator/health
 ```
 
+### Swagger UI
+
+Con el servicio corriendo, la documentación está en
+<http://localhost:8080/swagger-ui.html>. Muestra el contrato
+[`openapi.yaml`](openapi.yaml) tal cual (Maven lo copia al jar), no uno generado desde
+el código. Para probar desde ahí, elegí el servidor `http://localhost:8080` y llená
+`X-User-Id` y `X-User-Email`. En Azure no se puede abrir desde el navegador, porque el App
+Service exige el certificado de APIM.
+
+### Postman
+
+En [`postman/`](postman) está la colección con las 7 operaciones y los errores que el
+servicio tiene que rechazar (403 por perfil ajeno o sin encabezados, 400 por datos
+inválidos), cada una con sus pruebas. Hay dos entornos:
+
+- **Local** (`local.postman_environment.json`): contra `http://localhost:8080`, con los
+  encabezados de APIM puestos a mano.
+- **APIM** (`apim.postman_environment.json`): contra el gateway. Hay que llenar
+  `googleToken` con un ID token de Google, y `userId` y `userEmail` con el `sub` y el
+  correo de esa cuenta.
+
+Se importan en Postman (Import → la carpeta `postman/`) o se corren desde la terminal:
+
+```bash
+npx newman run postman/cvexpert-usuarios.postman_collection.json -e postman/local.postman_environment.json
+```
+
 ## Variables de entorno
 
 Ningún valor va en el código. En Azure se definen en el App Service, con referencias
@@ -77,6 +110,20 @@ al Key Vault para los secretos. Hay un ejemplo en [`.env.example`](.env.example)
 | `ADMIN_EMAILS` | Correos administradores, separados por coma | `gcabrerarojas.25@gmail.com` |
 | `SEED_ENABLED` | Carga los textos de `src/main/resources/seed` si la colección está vacía | `true` |
 | `PORT` | Puerto HTTP | `8080` |
+| `APIM_CERT_THUMBPRINTS` | Huellas SHA-1 del certificado de cliente de APIM, separadas por coma. Vacía = no se exige | vacía |
+
+## Despliegue
+
+- **CI** (`.github/workflows/ci.yml`): `mvn verify` en cada pull request y en cada push a
+  `develop` y `main`.
+- **CD** (`.github/workflows/cd.yml`): en cada push a `main` que cambie `src/`, `pom.xml`
+  o el workflow, vuelve a correr las pruebas y despliega `target/app.jar` al App Service
+  `cvexpert-usuarios`. Se autentica con OIDC (federated credential de
+  `gh-actions-cvexpert-ms-usuarios` para `refs/heads/main`), así que no hay contraseñas
+  en el repo. Necesita los secrets `AZURE_CLIENT_ID`, `AZURE_TENANT_ID` y
+  `AZURE_SUBSCRIPTION_ID`.
+- En Azure, `MONGODB_URI` es una referencia al secreto `Usuarios--MongoDbUri` de
+  `kv-cvexpert`, que el App Service lee con su identidad administrada.
 
 ## Estructura
 
@@ -88,8 +135,9 @@ src/main/java/cr/ac/tec/cvexpert/usuarios/
 ├── model/        Documentos de MongoDB (profiles, sessions, legal_documents, help_contacts)
 ├── dto/          Lo que entra y sale por la API
 ├── exception/    Errores y su traducción a ApiError
-└── config/       Propiedades, reloj y carga inicial de datos
-src/main/resources/seed/   Textos legales y contactos de ayuda iniciales (BORRADOR)
+└── config/       Propiedades, reloj, carga inicial de datos y filtro del certificado de APIM
+src/main/resources/seed/   Textos legales y contactos de ayuda iniciales
+postman/                   Colección y entornos de Postman
 ```
 
 ## Cómo contribuir
@@ -99,7 +147,8 @@ otro integrante del equipo.
 
 ## Pendiente
 
-- [ ] Pipeline de GitHub Actions: pruebas en cada PR y despliegue desde `main` (dom 25 oct)
-- [ ] Exigir el certificado de APIM en el App Service (sáb 31 oct)
-- [ ] Swagger UI y pruebas de Postman (mar 3 nov)
-- [ ] Reemplazar los textos legales y los correos de ayuda de `seed/` por los definitivos
+- [x] Pipeline de GitHub Actions: pruebas en cada PR y despliegue desde `main`
+- [x] Exigir el certificado de APIM en el App Service
+- [x] Swagger UI y pruebas de Postman
+- [x] Textos legales definitivos (términos 1.1 y privacidad 1.2, cargados también en producción)
+- [x] Correo real de ayuda y privacidad (`seed/help.json`, también en producción)

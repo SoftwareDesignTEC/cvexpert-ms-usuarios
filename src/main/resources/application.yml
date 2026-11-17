@@ -17,6 +17,17 @@ app:
   # Carga los textos legales y de ayuda de src/main/resources/seed si la colección está vacía.
   seed-enabled: ${SEED_ENABLED:true}
 
+apim:
+  # Huellas SHA-1 del certificado de cliente de APIM, separadas por coma. Vacío = no se exige
+  # (local y pruebas). En Azure se define junto con el modo de certificados de cliente del App Service.
+  cert-thumbprints: ${APIM_CERT_THUMBPRINTS:}
+
+springdoc:
+  # Swagger UI en /swagger-ui.html, sobre el contrato openapi.yaml y no sobre lo que se genera del
+  # código. api-docs queda activo porque, si se apaga, springdoc también apaga Swagger UI.
+  swagger-ui:
+    url: /openapi.yaml
+
 management:
   endpoints:
     web:

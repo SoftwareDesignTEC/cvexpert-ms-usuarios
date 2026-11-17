@@ -1,0 +1,256 @@
+{
+  "info": {
+    "name": "CVExpert · Usuarios",
+    "description": "Pruebas de las 7 operaciones del microservicio de Usuarios y de sus errores (400, 403).\n\nSe corre con uno de los dos entornos de esta carpeta:\n- **Local**: contra el backend en localhost. Los encabezados X-User-Id y X-User-Email se mandan a mano, como los agregaría APIM.\n- **APIM**: contra el gateway. Hace falta un token de Google válido en `googleToken`; APIM pisa los X-User-* con los datos del token, así que `userId` y `userEmail` tienen que ser los de esa cuenta.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{googleToken}}", "type": "string" }]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// En local no hay token: se quita el encabezado Authorization para no mandar 'Bearer ' vacío.",
+          "if (!pm.variables.get('googleToken')) {",
+          "    pm.request.headers.remove('Authorization');",
+          "}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Perfil",
+      "item": [
+        {
+          "name": "Obtener o crear el perfil",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('200', () => pm.response.to.have.status(200));",
+            "const p = pm.response.json();",
+            "pm.test('es el perfil del usuario', () => pm.expect(p.email).to.eql(pm.variables.get('userEmail')));",
+            "pm.test('rol en minúscula', () => pm.expect(['user', 'admin']).to.include(p.role));",
+            "pm.test('fechas en epoch ms', () => {",
+            "    pm.expect(p.createdAt).to.be.a('number').and.above(1e12);",
+            "    pm.expect(p.updatedAt).to.be.a('number').and.above(1e12);",
+            "});",
+            "pm.test('listas nunca null', () => {",
+            "    pm.expect(p.types).to.be.an('array');",
+            "    pm.expect(p.modalities).to.be.an('array');",
+            "    pm.expect(p.sectors).to.be.an('array');",
+            "});"
+          ] } }],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-User-Id", "value": "{{userId}}" },
+              { "key": "X-User-Email", "value": "{{userEmail}}" },
+              { "key": "X-Client", "value": "postman" }
+            ],
+            "url": { "raw": "{{baseUrl}}/profiles/{{userId}}", "host": ["{{baseUrl}}"], "path": ["profiles", "{{userId}}"] }
+          }
+        },
+        {
+          "name": "Actualizar el perfil",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('200', () => pm.response.to.have.status(200));",
+            "const p = pm.response.json();",
+            "pm.test('guardó los cambios', () => {",
+            "    pm.expect(p.bio).to.eql('Perfil de prueba desde Postman');",
+            "    pm.expect(p.modalities).to.eql(['remote', 'hybrid']);",
+            "});",
+            "pm.test('ignora role y email del cuerpo', () => {",
+            "    pm.expect(p.role).to.not.eql('superadmin');",
+            "    pm.expect(p.email).to.eql(pm.variables.get('userEmail'));",
+            "});"
+          ] } }],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "X-User-Id", "value": "{{userId}}" },
+              { "key": "X-User-Email", "value": "{{userEmail}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bio\": \"Perfil de prueba desde Postman\",\n  \"types\": [\"internship\"],\n  \"modalities\": [\"remote\", \"hybrid\"],\n  \"sectors\": [\"Tecnología\"],\n  \"email\": \"otro@example.com\",\n  \"role\": \"superadmin\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/profiles/{{userId}}", "host": ["{{baseUrl}}"], "path": ["profiles", "{{userId}}"] }
+          }
+        },
+        {
+          "name": "Sesiones activas",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('200', () => pm.response.to.have.status(200));",
+            "const r = pm.response.json();",
+            "pm.test('forma paginada', () => {",
+            "    pm.expect(r.items).to.be.an('array');",
+            "    pm.expect(r.totalRecords).to.be.a('number');",
+            "    pm.expect(r.page).to.eql(1);",
+            "    pm.expect(r.pageSize).to.eql(5);",
+            "});",
+            "pm.test('respeta pageSize', () => pm.expect(r.items.length).to.be.at.most(5));"
+          ] } }],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-User-Id", "value": "{{userId}}" },
+              { "key": "X-User-Email", "value": "{{userEmail}}" },
+              { "key": "X-Client", "value": "postman" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/profiles/{{userId}}/sessions?page=1&pageSize=5",
+              "host": ["{{baseUrl}}"],
+              "path": ["profiles", "{{userId}}", "sessions"],
+              "query": [{ "key": "page", "value": "1" }, { "key": "pageSize", "value": "5" }]
+            }
+          }
+        },
+        {
+          "name": "Exportar mis datos",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('200', () => pm.response.to.have.status(200));",
+            "const r = pm.response.json();",
+            "pm.test('trae perfil y sesiones', () => {",
+            "    pm.expect(r.exportVersion).to.be.a('string');",
+            "    pm.expect(r.generatedAt).to.be.a('number').and.above(1e12);",
+            "    pm.expect(r.profile.email).to.eql(pm.variables.get('userEmail'));",
+            "    pm.expect(r.sessions).to.be.an('array');",
+            "});"
+          ] } }],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-User-Id", "value": "{{userId}}" },
+              { "key": "X-User-Email", "value": "{{userEmail}}" },
+              { "key": "X-Client", "value": "postman" }
+            ],
+            "url": { "raw": "{{baseUrl}}/profiles/{{userId}}/export", "host": ["{{baseUrl}}"], "path": ["profiles", "{{userId}}", "export"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Legales y ayuda",
+      "item": [
+        {
+          "name": "Política de privacidad (es)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('200', () => pm.response.to.have.status(200));",
+            "const d = pm.response.json();",
+            "pm.test('documento completo', () => {",
+            "    ['id', 'title', 'version', 'effectiveDate', 'content'].forEach(k => pm.expect(d).to.have.property(k));",
+            "    pm.expect(d.effectiveDate).to.be.a('number');",
+            "});"
+          ] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/legal/privacy?lang=es", "host": ["{{baseUrl}}"], "path": ["legal", "privacy"], "query": [{ "key": "lang", "value": "es" }] }
+          }
+        },
+        {
+          "name": "Términos y condiciones (en)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('200', () => pm.response.to.have.status(200));",
+            "const d = pm.response.json();",
+            "pm.test('documento completo', () => {",
+            "    ['id', 'title', 'version', 'effectiveDate', 'content'].forEach(k => pm.expect(d).to.have.property(k));",
+            "});"
+          ] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/legal/terms?lang=en", "host": ["{{baseUrl}}"], "path": ["legal", "terms"], "query": [{ "key": "lang", "value": "en" }] }
+          }
+        },
+        {
+          "name": "Contactos de ayuda",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('200', () => pm.response.to.have.status(200));",
+            "const r = pm.response.json();",
+            "pm.test('lista de contactos', () => {",
+            "    pm.expect(r.contacts).to.be.an('array').that.is.not.empty;",
+            "    r.contacts.forEach(c => pm.expect(c.email).to.include('@'));",
+            "});"
+          ] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/help?lang=es", "host": ["{{baseUrl}}"], "path": ["help"], "query": [{ "key": "lang", "value": "es" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Errores",
+      "description": "Casos que el servicio tiene que rechazar.",
+      "item": [
+        {
+          "name": "Perfil de otra persona → 403",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('403', () => pm.response.to.have.status(403));",
+            "pm.test('error con forma ApiError', () => pm.expect(pm.response.json().status).to.eql(403));"
+          ] } }],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-User-Id", "value": "{{userId}}" },
+              { "key": "X-User-Email", "value": "{{userEmail}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/profiles/otro-usuario-123", "host": ["{{baseUrl}}"], "path": ["profiles", "otro-usuario-123"] }
+          }
+        },
+        {
+          "name": "Modalidad inválida → 400",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('400', () => pm.response.to.have.status(400));",
+            "pm.test('error con forma ApiError', () => pm.expect(pm.response.json().status).to.eql(400));"
+          ] } }],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "X-User-Id", "value": "{{userId}}" },
+              { "key": "X-User-Email", "value": "{{userEmail}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"modalities\": [\"desde-la-luna\"]\n}" },
+            "url": { "raw": "{{baseUrl}}/profiles/{{userId}}", "host": ["{{baseUrl}}"], "path": ["profiles", "{{userId}}"] }
+          }
+        },
+        {
+          "name": "Foto que no es URL → 400",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test('400', () => pm.response.to.have.status(400));"
+          ] } }],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "X-User-Id", "value": "{{userId}}" },
+              { "key": "X-User-Email", "value": "{{userEmail}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"photoUrl\": \"no-es-una-url\"\n}" },
+            "url": { "raw": "{{baseUrl}}/profiles/{{userId}}", "host": ["{{baseUrl}}"], "path": ["profiles", "{{userId}}"] }
+          }
+        },
+        {
+          "name": "Sin encabezados de APIM → 403 (solo local)",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "// Contra APIM este caso no aplica: APIM siempre agrega los encabezados, y sin token responde 401.",
+            "const esperado = pm.variables.get('googleToken') ? 200 : 403;",
+            "pm.test(esperado === 403 ? '403' : 'APIM agrega los encabezados', () => pm.response.to.have.status(esperado));"
+          ] } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/profiles/{{userId}}", "host": ["{{baseUrl}}"], "path": ["profiles", "{{userId}}"] }
+          }
+        }
+      ]
+    }
+  ]
+}

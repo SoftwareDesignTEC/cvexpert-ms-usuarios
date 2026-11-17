@@ -5,7 +5,7 @@
     "position": 1,
     "type": "support",
     "label": "Soporte técnico",
-    "email": "soporte@cvexpert.example"
+    "email": "cvexpert.tec@gmail.com"
   },
   {
     "id": "help-es-2",
@@ -13,7 +13,7 @@
     "position": 2,
     "type": "privacy",
     "label": "Privacidad y datos",
-    "email": "privacidad@cvexpert.example"
+    "email": "cvexpert.tec@gmail.com"
   },
   {
     "id": "help-en-1",
@@ -21,7 +21,7 @@
     "position": 1,
     "type": "support",
     "label": "Technical support",
-    "email": "soporte@cvexpert.example"
+    "email": "cvexpert.tec@gmail.com"
   },
   {
     "id": "help-en-2",
@@ -29,6 +29,6 @@
     "position": 2,
     "type": "privacy",
     "label": "Privacy and data",
-    "email": "privacidad@cvexpert.example"
+    "email": "cvexpert.tec@gmail.com"
   }
 ]

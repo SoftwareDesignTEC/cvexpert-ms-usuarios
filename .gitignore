@@ -35,6 +35,8 @@ src/main/resources/application-*.properties
 *.jks
 *.keystore
 *.truststore
+# Excepción: parte PÚBLICA del certificado de APIM, usada como dato de prueba (no tiene llave privada)
+!src/test/resources/apim/cvexpert-apim-client.cer
 
 # Azure y despliegue
 .azure/
